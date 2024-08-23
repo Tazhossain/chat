@@ -6,7 +6,7 @@ app = Flask(__name__)
 app.secret_key = 'your_secret_key_here'
 socketio = SocketIO(app)
 
-PASSWORD = "password123"
+PASSWORD = "123"
 rooms = {}
 nicknames = {}
 
