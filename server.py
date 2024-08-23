@@ -2,7 +2,7 @@ import os
 from flask_socketio import SocketIO, emit, join_room, leave_room
 from flask import Flask, render_template, request, redirect, url_for, session
 
-app = Flask(__name__)
+app = Flask(__name__, template_folder='template')
 app.secret_key = 'your_secret_key_here'
 socketio = SocketIO(app)
 
