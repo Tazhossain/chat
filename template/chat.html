@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <div class="chat-container">
+        <div class="chat-header">
+            <div class="menu-icon" onclick="toggleMenu()">☰</div>
+            <h2>Chat</h2>
+            <div class="options-menu" id="options-menu">
+                <button onclick="toggleNightMode()">Night Mode</button>
+                <button onclick="clearChat()">Clear Chat</button>
+                <button onclick="toggleNotifications()">Notifications</button>
+                <button onclick="toggleSound()">Sound</button>
+            </div>
+        </div>
+        <div id="chatbox" class="chatbox"></div>
+        <form id="chat-form">
+            <input type="text" id="message" placeholder="Type your message...">
+            <button type="submit">Send</button>
+        </form>
+    </div>
+    <script src="https://cdn.socket.io/4.4.1/socket.io.min.js"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>
