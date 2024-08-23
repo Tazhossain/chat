@@ -18,12 +18,14 @@
                 <button onclick="toggleSound()">Sound</button>
             </div>
         </div>
+        <div id="user-list" class="user-list"></div>
         <div id="chatbox" class="chatbox"></div>
         <form id="chat-form">
             <input type="text" id="message" placeholder="Type your message...">
             <button type="submit">Send</button>
         </form>
     </div>
+    <audio id="notification-sound" src="{{ url_for('static', filename='sounds/notification.mp3') }}" preload="auto"></audio>
     <script src="https://cdn.socket.io/4.4.1/socket.io.min.js"></script>
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 </body>
