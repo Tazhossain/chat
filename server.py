@@ -38,27 +38,22 @@ def handle_message(msg):
         nicknames.pop(old_nick, None)
         nicknames[new_nick] = new_nick
         session['nickname'] = new_nick
-        emit('message', {'msg': f'{old_nick} changed their name to {new_nick}', 'type': 'system'}, room='room')
+        emit('message', {'nickname': 'System', 'msg': f'{old_nick} changed their name to {new_nick}', 'timestamp': get_timestamp()}, room='room')
         update_users()
     elif msg == "/delete":
         rooms['room'] = []
         emit('clear_chat', room='room')
     else:
         rooms['room'].append({'nickname': nickname, 'msg': msg, 'timestamp': get_timestamp()})
-        emit('message', {'msg': f'{nickname}: {msg}', 'type': 'user', 'timestamp': get_timestamp()}, room='room')
-
-@socketio.on('delete_message')
-def delete_message(index):
-    if 0 <= index < len(rooms['room']):
-        rooms['room'].pop(index)
-        emit('update_chat', rooms['room'], broadcast=True)
+        emit('message', {'nickname': nickname, 'msg': msg, 'timestamp': get_timestamp()}, room='room')
 
 @socketio.on('connect')
 def connect():
     nickname = session.get('nickname')
     if nickname:
         join_room('room')
-        emit('message', {'msg': f'{nickname} has joined the chat!', 'type': 'system'}, room='room')
+        emit('message', {'nickname': 'System', 'msg': f'{nickname} has joined the chat!', 'timestamp': get_timestamp()}, room='room')
+        update_chat_history()
         update_users()
 
 @socketio.on('disconnect')
@@ -67,17 +62,20 @@ def disconnect():
     if nickname:
         leave_room('room')
         nicknames.pop(nickname, None)
-        emit('message', {'msg': f'{nickname} has left the chat.', 'type': 'system'}, room='room')
+        emit('user_left', {'nickname': nickname}, room='room')
         update_users()
 
 def update_users():
     users = [{'nickname': nick, 'active': True} for nick in nicknames.values()]
     emit('update_users', users, broadcast=True)
 
+def update_chat_history():
+    emit('update_chat', rooms['room'], room='room')
+
 def get_timestamp():
     from datetime import datetime
     return datetime.now().strftime('%H:%M:%S')
 
 if __name__ == '__main__':
-    port = int(os.environ.get('PORT', 5000))
+    port = int(os.environ.get('PORT', 5009))
     socketio.run(app, host='0.0.0.0', port=port)
