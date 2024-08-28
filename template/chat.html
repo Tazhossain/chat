@@ -25,7 +25,12 @@
             <button type="submit">Send</button>
         </form>
     </div>
+
+    <!-- Notification Sounds -->
     <audio id="notification-sound" src="{{ url_for('static', filename='sounds/notification.mp3') }}" preload="auto"></audio>
+    <audio id="joined-sound" src="{{ url_for('static', filename='sounds/joined.mp3') }}" preload="auto"></audio>
+    <audio id="leaved-sound" src="{{ url_for('static', filename='sounds/leaved.mp3') }}" preload="auto"></audio>
+
     <script src="https://cdn.socket.io/4.4.1/socket.io.min.js"></script>
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 </body>
