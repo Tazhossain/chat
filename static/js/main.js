@@ -2,42 +2,64 @@ const socket = io();
 const chatbox = document.getElementById('chatbox');
 const chatForm = document.getElementById('chat-form');
 const messageInput = document.getElementById('message');
-const notificationSound = new Audio('/static/sounds/notification.mp3');
 let nightMode = false;
 let notificationsEnabled = false;
 let soundEnabled = false;
 
-// Append message to chatbox with timestamp
-function appendMessage(data) {
+// Function to format time to 12-hour format
+function formatTime(date) {
+    let hours = date.getHours();
+    const minutes = date.getMinutes();
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+    hours = hours % 12;
+    hours = hours ? hours : 12; // the hour '0' should be '12'
+    return `${hours}:${minutes < 10 ? '0' : ''}${minutes} ${ampm}`;
+}
+
+// Function to add a message to the chatbox with a timestamp
+function addMessage(message) {
     const div = document.createElement('div');
-    div.textContent = `[${data.timestamp}] ${data.msg}`;
-    chatbox.appendChild(div);
+    const timestamp = document.createElement('span');
+    timestamp.className = 'timestamp';
+    timestamp.innerText = formatTime(new Date(message.timestamp));
+
+    const messageContent = document.createElement('div');
+    messageContent.innerHTML = `<strong>${message.nickname}</strong>: ${message.msg}`;
+    
+    const messageWrapper = document.createElement('div');
+    messageWrapper.className = 'message-wrapper';
+    messageWrapper.appendChild(messageContent);
+    messageWrapper.appendChild(timestamp);
+
+    chatbox.appendChild(messageWrapper);
     chatbox.scrollTop = chatbox.scrollHeight;
 }
 
 socket.on('message', function(data) {
-    appendMessage(data);
+    addMessage(data);
 
-    if (notificationsEnabled && Notification.permission === 'granted') {
-        new Notification('New message', {
-            body: data.msg,
-            timestamp: data.timestamp
-        });
+    if (notificationsEnabled && data.nickname !== sessionStorage.getItem('nickname')) {
+        new Notification('New message', { body: data.msg });
     }
 
-    if (soundEnabled) {
-        notificationSound.play();
+    if (soundEnabled && data.nickname !== sessionStorage.getItem('nickname')) {
+        const audio = document.getElementById('notification-sound');
+        audio.play();
     }
 });
 
 socket.on('update_users', function(users) {
     const userList = document.getElementById('user-list');
-    userList.innerHTML = '';
-    users.forEach(user => {
-        const userDiv = document.createElement('div');
-        userDiv.textContent = user.nickname;
-        userList.appendChild(userDiv);
-    });
+    userList.innerHTML = users.map(user => `
+        <div>
+            <span style="color: green;">●</span> ${user.nickname}
+        </div>
+    `).join('');
+});
+
+socket.on('update_chat', function(messages) {
+    chatbox.innerHTML = '';
+    messages.forEach(addMessage);
 });
 
 chatForm.addEventListener('submit', function(event) {
@@ -59,22 +81,16 @@ function clearChat() {
 }
 
 function toggleNotifications() {
-    if (!notificationsEnabled && Notification.permission !== 'granted') {
-        Notification.requestPermission().then(permission => {
-            if (permission === 'granted') {
-                notificationsEnabled = true;
-                alert('Notifications enabled.');
-            }
-        });
-    } else {
-        notificationsEnabled = !notificationsEnabled;
-        alert(`Notifications ${notificationsEnabled ? 'enabled' : 'disabled'}.`);
+    notificationsEnabled = !notificationsEnabled;
+    if (notificationsEnabled && Notification.permission !== 'granted') {
+        Notification.requestPermission();
     }
+    alert(notificationsEnabled ? 'Notifications enabled' : 'Notifications disabled');
 }
 
 function toggleSound() {
     soundEnabled = !soundEnabled;
-    alert(`Sound ${soundEnabled ? 'enabled' : 'disabled'}.`);
+    alert(soundEnabled ? 'Sound enabled' : 'Sound disabled');
 }
 
 function toggleMenu() {
@@ -87,10 +103,10 @@ socket.on('clear_chat', function() {
     chatbox.innerHTML = '';
 });
 
-// Handle the update chat command to refresh chat history
-socket.on('update_chat', function(messages) {
-    chatbox.innerHTML = '';
-    messages.forEach(function(message) {
-        appendMessage(message);
-    });
+// Handle the disconnect event
+socket.on('user_left', function(data) {
+    const div = document.createElement('div');
+    div.textContent = `${data.nickname} has left the chat.`;
+    chatbox.appendChild(div);
+    chatbox.scrollTop = chatbox.scrollHeight;
 });
