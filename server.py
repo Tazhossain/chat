@@ -30,9 +30,11 @@ def chat():
     return render_template('chat.html', nickname=session['nickname'])
 
 @socketio.on('message')
-def handle_message(msg):
+def handle_message(data):
+    msg = data.get('msg', '')
     nickname = session.get('nickname')
-    if msg.startswith("/nick "):
+
+    if isinstance(msg, str) and msg.startswith("/nick "):
         new_nick = msg[6:].strip()
         old_nick = nickname
         nicknames.pop(old_nick, None)
@@ -52,7 +54,7 @@ def connect():
     nickname = session.get('nickname')
     if nickname:
         join_room('room')
-        emit('message', {'nickname': 'System', 'msg': f'{nickname} has joined the chat!', 'timestamp': get_timestamp()}, room='room')
+        emit('user_joined', {'nickname': nickname}, room='room')
         update_chat_history()
         update_users()
 
@@ -74,8 +76,8 @@ def update_chat_history():
 
 def get_timestamp():
     from datetime import datetime
-    return datetime.now().strftime('%H:%M:%S')
+    return datetime.now().strftime('%I:%M %p')  # 12-hour format without seconds
 
 if __name__ == '__main__':
-    port = int(os.environ.get('PORT', 5009))
+    port = int(os.environ.get('PORT', 5000))
     socketio.run(app, host='0.0.0.0', port=port)
