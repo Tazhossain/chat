@@ -3,6 +3,7 @@ body {
     margin: 0;
     padding: 0;
     background-color: #f4f4f4;
+    transition: background-color 0.5s ease, color 0.5s ease;
 }
 
 .chat-container {
@@ -124,30 +125,81 @@ body {
     background-color: #e65a50;
 }
 
+/* Night Mode Styles */
 .night-mode {
-    background-color: #2c2c2c;
-    color: #ccc;
+    background-color: #2b2b2b;
+    color: #dcdcdc;
+    transition: background-color 0.5s ease, color 0.5s ease;
+}
+
+.night-mode .chat-container {
+    background-color: #3c3c3c;
+    box-shadow: none;
+}
+
+.night-mode .chat-header {
+    background-color: #3c3c3c;
+    color: #dcdcdc;
+}
+
+.night-mode .menu-icon {
+    color: #dcdcdc;
+}
+
+.night-mode .options-menu {
+    background-color: #3c3c3c;
+    border-color: #4c4c4c;
+}
+
+.night-mode .options-menu button {
+    background-color: #4c4c4c;
+    color: #dcdcdc;
+}
+
+.night-mode .options-menu button:hover {
+    background-color: #5d5d5d;
+}
+
+.night-mode .user-list {
+    background-color: #2b2b2b;
+    color: #dcdcdc;
+    border-color: #444;
+}
+
+.night-mode .user-list div {
+    color: #dcdcdc;
 }
 
 .night-mode .chatbox {
-    background-color: #383838;
+    background-color: #2b2b2b;
+    color: #dcdcdc;
 }
 
 .night-mode .chatbox .message-wrapper {
-    background-color: #555;
-    color: #ccc;
+    background-color: #4c4c4c;
+    color: #dcdcdc;
+}
+
+.night-mode .timestamp {
+    color: #a0a0a0;
+}
+
+.night-mode #chat-form {
+    background-color: #3c3c3c;
+    border-color: #444;
 }
 
 .night-mode #chat-form input {
-    background-color: #555;
-    color: #ccc;
-    border: 1px solid #444;
+    background-color: #4c4c4c;
+    color: #dcdcdc;
+    border-color: #555;
 }
 
 .night-mode #chat-form button {
-    background-color: #444;
+    background-color: #5d5d5d;
+    color: #fff;
 }
 
 .night-mode #chat-form button:hover {
-    background-color: #333;
+    background-color: #666;
 }
