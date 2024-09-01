@@ -6,7 +6,7 @@
     <title>Chat</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
-<body>
+<body data-nickname="{{ nickname }}">
     <div class="chat-container">
         <div class="chat-header">
             <div class="menu-icon" onclick="toggleMenu()">☰</div>
@@ -16,6 +16,7 @@
                 <button onclick="clearChat()">Clear Chat</button>
                 <button onclick="toggleNotifications()">Notifications</button>
                 <button onclick="toggleSound()">Sound</button>
+                <button onclick="window.location.href='/logout'">Logout</button>
             </div>
         </div>
         <div id="user-list" class="user-list"></div>
