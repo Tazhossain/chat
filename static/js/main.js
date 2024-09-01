@@ -7,8 +7,8 @@ const joinedSound = document.getElementById('joined-sound');
 const leavedSound = document.getElementById('leaved-sound');
 
 let nightMode = false;
-let notificationsEnabled = false;
-let soundEnabled = false;
+let notificationsEnabled = false;  // Disabled by default
+let soundEnabled = false;  // Disabled by default
 const nickname = document.querySelector('body').dataset.nickname; // Use nickname from session
 
 function formatTime(date) {
@@ -24,7 +24,7 @@ function addMessage(message) {
     const div = document.createElement('div');
     const timestamp = document.createElement('span');
     timestamp.className = 'timestamp';
-    timestamp.innerText = formatTime(new Date());
+    timestamp.innerText = message.timestamp;
 
     const messageContent = document.createElement('div');
     messageContent.innerHTML = `<strong>${message.nickname}</strong>: ${message.msg}`;
@@ -41,21 +41,21 @@ function addMessage(message) {
 socket.on('message', function(data) {
     addMessage(data);
 
-    // Play sound only for received messages
+    // Play sound only for received messages from others
     if (soundEnabled && data.nickname !== nickname) {
         notificationSound.play();
     }
 });
 
 socket.on('user_joined', function(data) {
-    addMessage({ nickname: "", msg: `${data.nickname} has joined the chat.` });
+    addMessage({ nickname: data.nickname, msg: `has joined the chat.`, timestamp: formatTime(new Date()) });
     if (soundEnabled) {
         joinedSound.play();
     }
 });
 
 socket.on('user_left', function(data) {
-    addMessage({ nickname: "", msg: `${data.nickname} has left the chat.` });
+    addMessage({ nickname: data.nickname, msg: `has left the chat.`, timestamp: formatTime(new Date()) });
     if (soundEnabled) {
         leavedSound.play();
     }
@@ -90,7 +90,7 @@ function toggleNightMode() {
 }
 
 function clearChat() {
-    socket.emit('message', { nickname: nickname, msg: '/delete' });
+    socket.emit('message', { nickname: nickname, msg: '/clear' });
 }
 
 function toggleNotifications() {
